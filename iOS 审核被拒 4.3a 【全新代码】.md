@@ -1,3 +1,137 @@
 # iOS 审核被拒 4.3a 【全新代码】
 
-<p><span style="color:#000000"><span id="cke_bm_342S" style="display:none">&nbsp;</span>​</span></p><p><br></p><p>我们这篇文章专门来讲述关于新代码4.3a的问题</p><p><br></p><h1>为什么全新代码还会导致4.3a?</h1><p><br></p><p>很多开发者或者公司比较疑惑,认为全新手写的代码根本不会遇到4.3a的问题, 而现实却不尽人意.</p><p><br></p><h1>这里直接给出答案 : 你认为的新代码并不是苹果的查重指标</h1><p><br></p><p>什么意思?&nbsp;<br><br></p><h1>uniapp :&nbsp;</h1><p><br>我们以uniapp 为例, 因为这是所有语言中4.3的概率较高的,与之居高不下的就是cocos开发的app</p><p><br></p><p>我们来看uniapp的编译产物</p><p><img alt="" height="423" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/f412441f9fa92f3cc7fa446f2ccafc52.png" width="427" data-widget="image" class="cke_widget_element"></p><p><br></p><p>1: &nbsp;一个可执行文件HBbuider<br>2: 两个动态库 DCloudUTSFoundation.framework,DCUniBase.framework</p><p>3: 以及你的vue代码</p><p><img alt="" height="262" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/875164fd74384b44cd4c10c2ab76b4c1.png" width="506" data-widget="image" class="cke_widget_element"></p><p><br></p><p>所有uniapp的编译产物几乎由这三个部分组成, 这无疑造成了一些基础的相似</p><p>你写的代码被编译成了什么? &nbsp;这很重要, 我们看到你的vue代码最终被编译后是什么样子</p><p><img alt="" height="452" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/f24374e4c2f728cf7e9db7b3da3d7ba6.png" width="553" data-widget="image" class="cke_widget_element"></p><p><br></p><p>代码被整和了, 被整和到若干个js文件中, 这其实对苹果来说更是一个资源文件, 这就你无论怎么修改vue代码提交,甚至翻新了整个工程, 还是没有解决4.3的根本原因.</p><p><br></p><h1>cocos</h1><p>cocos也是触发4.3a概率最高的语言之一 , 这也是由于编译产物太多相似导致的,而且cocos相对来说更复杂. 我们以cocos3.x为例</p><p><br></p><p><img alt="" height="322" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/ca16d4b3dbf1dec513495eb0ecaf4251.png" width="537" data-widget="image" class="cke_widget_element"></p><p><br></p><p>我们看到cocos的编译产物非常简洁, 似乎只有一个可执行文件和类似uniapp一样的js文件组成,没有基础的动态库</p><p><img alt="" height="255" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/0de7d5d4ca5ca30ebd6324c77f2879b3.png" width="601" data-widget="image" class="cke_widget_element"></p><p><br></p><p>注意: cocos的可执行文件往往很大, 一个基础的app&nbsp;可执行文件几乎达到了20M, 模块集成的多可能会更大. &nbsp;我们来看这么大的可执行文件里面是什么?&nbsp;<br><br><img alt="" height="559" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/465e612f9a4baeb38c1eba4948feecac.png" width="1109" data-widget="image" class="cke_widget_element"><br><br></p><p>我们看到除了一些oc文件, 还有很多c++文件, 没错, 这就是cocos引擎代码, 因为他是静态库的存在, 最终被编译到可执行文件中, 造成了可执行文件相似度极高</p><p>随便对比两个不相关的cocos开发的app,可执行文件相似度高达97%, 这无疑是要4.3a打回的<br><br><img alt="" height="269" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/e296607d3f5d4d330743310c89af83fb.png" width="511" data-widget="image" class="cke_widget_element"></p><p><br></p><p><br></p><p>在众多语言中cocos的处理4.3的难度最高, 因为需要出引擎库进行处理, 这无疑是非常复杂的. 没有经验的开发者, 似乎难以找到问题, 更别说着手处理4.3</p><p><br></p><p><br></p><h1>我们来重点说一下flutter</h1><p>因为flutter目前还是开发app使用率最高的语言, 因为他几乎没有什么缺点, &nbsp;flutter无论从开发的角度, 还是编译产物, 还是整体的设计, 是我最满意的, 因为他不会给开发者造成太大的困扰. &nbsp;而且非常轻量级, &nbsp;不像uniapp那么固话, &nbsp;也不像cocos那么死板</p><p><br></p><p>flutter的编译产物非常的清晰,明了&nbsp;</p><p><img alt="" height="362" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/30b58b86bb13ce3dd86745f5b3c96a91.png" width="441" data-widget="image" class="cke_widget_element"></p><p><br></p><p>这里有两个重要的动态库<br>1: flutter.framework &nbsp;这是flutter引擎库,每个工程都会集成, 不同的版本 导致这个库会有少许差距</p><p>2: app.framework &nbsp;这里存放的就是你的dart代码.</p><p>那么其他的动态库就是你在开发过程中使用的一些三方插件</p><p><br></p><h3>我们主要来观察可执行文件</h3><p><img alt="" height="427" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/0a988ab5abf76e4f38d81a2ff3c9b3de.png" width="894" data-widget="image" class="cke_widget_element"></p><p><br></p><p>我们发现非常小只有上百k, 这几乎是空的, fluter的设计非常好, 这个文件是空的, 就不会给我们增加基础相似</p><p><br></p><h1>说了半天,那么flutter的新代码造成的4.3的原因是啥?&nbsp;</h1><p><br></p><p>关注我,下篇文章我们来详细讲解flutter的新代码遇到的4.3问题, &nbsp;</p><p><br></p>
+<p><span style="color:#000000"><span id="cke_bm_342S" style="display:none">&nbsp;</span>​</span></p>
+
+<p>&nbsp;</p>
+
+<p>我们这篇文章专门来讲述关于新代码4.3a的问题</p>
+
+<p>&nbsp;</p>
+
+<h1>为什么全新代码还会导致4.3a?</h1>
+
+<p>&nbsp;</p>
+
+<p>很多开发者或者公司比较疑惑,认为全新手写的代码根本不会遇到4.3a的问题, 而现实却不尽人意.</p>
+
+<p>&nbsp;</p>
+
+<h1>这里直接给出答案 : 你认为的新代码并不是苹果的查重指标</h1>
+
+<p>&nbsp;</p>
+
+<p>什么意思?&nbsp;<br>
+&nbsp;</p>
+
+<h1>uniapp :&nbsp;</h1>
+
+<p><br>
+我们以uniapp 为例, 因为这是所有语言中4.3的概率较高的,与之居高不下的就是cocos开发的app</p>
+
+<p>&nbsp;</p>
+
+<p>我们来看uniapp的编译产物</p>
+
+<p><img alt="" data-widget="image" height="423" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/f412441f9fa92f3cc7fa446f2ccafc52.png" width="427"></p>
+
+<p>&nbsp;</p>
+
+<p>1: &nbsp;一个可执行文件HBbuider<br>
+2: 两个动态库 DCloudUTSFoundation.framework,DCUniBase.framework</p>
+
+<p>3: 以及你的vue代码</p>
+
+<p><img alt="" data-widget="image" height="262" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/875164fd74384b44cd4c10c2ab76b4c1.png" width="506"></p>
+
+<p>&nbsp;</p>
+
+<p>所有uniapp的编译产物几乎由这三个部分组成, 这无疑造成了一些基础的相似</p>
+
+<p>你写的代码被编译成了什么? &nbsp;这很重要, 我们看到你的vue代码最终被编译后是什么样子</p>
+
+<p><img alt="" data-widget="image" height="452" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/f24374e4c2f728cf7e9db7b3da3d7ba6.png" width="553"></p>
+
+<p>&nbsp;</p>
+
+<p>代码被整和了, 被整和到若干个js文件中, 这其实对苹果来说更是一个资源文件, 这就你无论怎么修改vue代码提交,甚至翻新了整个工程, 还是没有解决4.3的根本原因.</p>
+
+<p>&nbsp;</p>
+
+<h1>cocos</h1>
+
+<p>cocos也是触发4.3a概率最高的语言之一 , 这也是由于编译产物太多相似导致的,而且cocos相对来说更复杂. 我们以cocos3.x为例</p>
+
+<p>&nbsp;</p>
+
+<p><img alt="" data-widget="image" height="322" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/ca16d4b3dbf1dec513495eb0ecaf4251.png" width="537"></p>
+
+<p>&nbsp;</p>
+
+<p>我们看到cocos的编译产物非常简洁, 似乎只有一个可执行文件和类似uniapp一样的js文件组成,没有基础的动态库</p>
+
+<p><img alt="" data-widget="image" height="255" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/0de7d5d4ca5ca30ebd6324c77f2879b3.png" width="601"></p>
+
+<p>&nbsp;</p>
+
+<p>注意: cocos的可执行文件往往很大, 一个基础的app&nbsp;可执行文件几乎达到了20M, 模块集成的多可能会更大. &nbsp;我们来看这么大的可执行文件里面是什么?&nbsp;<br>
+<br>
+<img alt="" data-widget="image" height="559" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/465e612f9a4baeb38c1eba4948feecac.png" width="1109"><br>
+&nbsp;</p>
+
+<p>我们看到除了一些oc文件, 还有很多c++文件, 没错, 这就是cocos引擎代码, 因为他是静态库的存在, 最终被编译到可执行文件中, 造成了可执行文件相似度极高</p>
+
+<p>随便对比两个不相关的cocos开发的app,可执行文件相似度高达90%, 这无疑是要4.3a打回的<br>
+<img alt="" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/284a209ad596fa653e3e94ca59e9eaa3.png" style="max-width: 100%; height: auto; display: block;"></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>在众多语言中cocos的处理4.3的难度最高, 因为需要出引擎库进行处理, 这无疑是非常复杂的. 没有经验的开发者, 似乎难以找到问题, 更别说着手处理4.3</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h1>我们来重点说一下flutter</h1>
+
+<p>因为flutter目前还是开发app使用率最高的语言, 因为他几乎没有什么缺点, &nbsp;flutter无论从开发的角度, 还是编译产物, 还是整体的设计, 是我最满意的, 因为他不会给开发者造成太大的困扰. &nbsp;而且非常轻量级, &nbsp;不像uniapp那么固话, &nbsp;也不像cocos那么死板</p>
+
+<p>&nbsp;</p>
+
+<p>flutter的编译产物非常的清晰,明了&nbsp;</p>
+
+<p><img alt="" data-widget="image" height="362" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/30b58b86bb13ce3dd86745f5b3c96a91.png" width="441"></p>
+
+<p>&nbsp;</p>
+
+<p>这里有两个重要的动态库<br>
+1: flutter.framework &nbsp;这是flutter引擎库,每个工程都会集成, 不同的版本 导致这个库会有少许差距</p>
+
+<p>2: app.framework &nbsp;这里存放的就是你的dart代码.</p>
+
+<p>那么其他的动态库就是你在开发过程中使用的一些三方插件</p>
+
+<p>&nbsp;</p>
+
+<h3>我们主要来观察可执行文件</h3>
+
+<p><img alt="" data-widget="image" height="427" loading="eager" src="https://baizhi-1318151832.cos.ap-shanghai.myqcloud.com/images/0a988ab5abf76e4f38d81a2ff3c9b3de.png" width="894"></p>
+
+<p>&nbsp;</p>
+
+<p>我们发现非常小只有上百k, 这几乎是空的, fluter的设计非常好, 这个文件是空的, 就不会给我们增加基础相似</p>
+
+<p>&nbsp;</p>
+
+<h1>说了半天,那么flutter的新代码造成的4.3的原因是啥?&nbsp;</h1>
+
+<p>&nbsp;</p>
+
+<p>关注我,下篇文章我们来详细讲解flutter的新代码遇到的4.3问题, &nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>遇到4.3就找<a href="https://www.appstore.love/">柏芝科技</a></p>
+
+<p>&nbsp;</p>
